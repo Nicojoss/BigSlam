@@ -2,49 +2,51 @@ package be.jossart.pojo;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Match implements Serializable{
 	//ATTRIBUTS
 	private static final long serialVersionUID = 4804782659203218408L;
-	int id;
 	private LocalDate date;
 	private int duration;
 	private int round;
 	private Court court;
 	private Referee referee;
 	private List<Set> sets;
-	private List<Opponent> opponents;
+	private List<Opponent> opponents = new ArrayList<>();
+	private Schedule schedule;
 	
 	//CTOR
-	public Match() {
+	public Match(int round, Schedule schedule) {
 		super();
-	}
-	public Match(int id, LocalDate date, int duration, int round, List<Set> sets,
-			List<Opponent> opponents) {
-		super();
-		this.id = id;
-		this.date = date;
-		this.duration = duration;
+		this.date = LocalDate.now();
+		this.duration = generateDuration(90, 120);
 		this.round = round;
-		this.sets = sets;
-		this.opponents = opponents;
+		this.schedule = schedule;
+		initOpponents();
 	}
 	
 	//Methodes
 	public Player getWinner() {
 		return null;
 	}
-	public boolean play() {
-		return false;
+	public void play() {
+		
 	}
+	private static int generateDuration(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max - min + 1) + min;
+    }
+	private void initOpponents() {
+		for(int i=0 ; i<2; i++) {
+			Opponent opponent = new Opponent(this);
+			opponents.add(opponent);
+		}
+	}
+
 	//GETTERS SETTERS
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public LocalDate getDate() {
 		return date;
 	}
@@ -78,16 +80,23 @@ public class Match implements Serializable{
 	public List<Opponent> getOpponents() {
 		return opponents;
 	}
+
 	public void setOpponents(List<Opponent> opponents) {
 		this.opponents = opponents;
 	}
+
 	public Court getCourt() {
 		return court;
 	}
 	public void setCourt(Court court) {
 		this.court = court;
 	}
-	
-	
-	
+
+	public Schedule getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
 }

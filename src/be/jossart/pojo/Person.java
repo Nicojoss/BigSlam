@@ -21,6 +21,11 @@ public abstract class Person implements Serializable{
 		this.lastname = lastname;
 		this.nationality = nationality;
 	}
+	//METHODES
+	@Override
+	public String toString() {
+		return "" + firstname + ", " + lastname + ", " + nationality;
+	}
 	
 	//GETTERS SETTERS
 	public int getId() {

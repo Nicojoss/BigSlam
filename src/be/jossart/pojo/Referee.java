@@ -3,6 +3,9 @@ package be.jossart.pojo;
 import java.io.Serializable;
 import java.util.List;
 
+import be.jossart.connection.BigSlamConnection;
+import be.jossart.dao.RefereeDAO;
+
 public class Referee extends Person implements Serializable{
 	//ATTRIBUTS
 	private static final long serialVersionUID = 623324850825415671L;
@@ -10,15 +13,20 @@ public class Referee extends Person implements Serializable{
 	private List<Tournament> tournaments;
 	
 	//CTOR
-	public Referee(int id, String firstname, String lastname, String nationality, Match match, List<Tournament> tournaments) {
+	public Referee(int id, String firstname, String lastname, String nationality) {
 		super(id, firstname, lastname, nationality);
-		this.match = match;
-		this.tournaments = tournaments;
 	}
 	public Referee() {
 		super();
 	}
-	
+	//METHODES
+	public static List<Referee> getAllReferee() {
+		RefereeDAO refereeDAO = new RefereeDAO(BigSlamConnection.getInstance());
+		
+		List<Referee> referees = refereeDAO.findAll();
+	    
+	    return referees;
+	}
 	//GETTERS SETTERS
 	public Match getMatch() {
 		return match;
@@ -33,6 +41,7 @@ public class Referee extends Person implements Serializable{
 	public void setTournaments(List<Tournament> tournaments) {
 		this.tournaments = tournaments;
 	}
+	
 	
 	
 

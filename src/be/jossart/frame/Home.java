@@ -9,6 +9,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import be.jossart.pojo.Tournament;
+
 import javax.swing.SwingConstants;
 
 public class Home extends JFrame {
@@ -49,42 +52,19 @@ public class Home extends JFrame {
 		lblWelcome.setBounds(77, 14, 258, 21);
 		contentPane.add(lblWelcome);
 
-		JButton btnStartGentlemenSingle = new JButton("Start Gentlemen Single");
-		btnStartGentlemenSingle.setBounds(100, 60, 200, 30);
-		contentPane.add(btnStartGentlemenSingle);
-
-		JButton btnStartLadiesSingle = new JButton("Start Ladies Single");
-		btnStartLadiesSingle.setBounds(100, 100, 200, 30);
-		contentPane.add(btnStartLadiesSingle);
-
-		JButton btnStartGentlemenDouble = new JButton("Start Gentlemen Double");
-		btnStartGentlemenDouble.setBounds(100, 140, 200, 30);
-		contentPane.add(btnStartGentlemenDouble);
-
-		JButton btnStartLadiesDouble = new JButton("Start Ladies Double");
-		btnStartLadiesDouble.setBounds(100, 180, 200, 30);
-		contentPane.add(btnStartLadiesDouble);
-
-		JButton btnStartMixedDouble = new JButton("Start Mixed Double");
-		btnStartMixedDouble.setBounds(100, 220, 200, 30);
-		contentPane.add(btnStartMixedDouble);
-		
-		btnStartGentlemenSingle.addActionListener(startTournamentListener("Gentlemen Single"));
-		btnStartLadiesSingle.addActionListener(startTournamentListener("Ladies Single"));
-		btnStartGentlemenDouble.addActionListener(startTournamentListener("Gentlemen Double"));
-		btnStartLadiesDouble.addActionListener(startTournamentListener("Ladies Double"));
-		btnStartMixedDouble.addActionListener(startTournamentListener("Mixed Double"));
-	}
-
-	private ActionListener startTournamentListener(final String tournamentType) {
-		return new ActionListener() {
+		JButton btnStartTournament = new JButton("Start Tournament");
+		btnStartTournament.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TournamentFrame tournamentFrame = new TournamentFrame(tournamentType);
+				Tournament tournament = new Tournament("Big Slam");
+				TournamentFrame tournamentFrame = new TournamentFrame(tournament);
 				tournamentFrame.setVisible(true);
 
 				dispose();
 			}
-		};
+		});
+		btnStartTournament.setBounds(100, 60, 200, 30);
+		contentPane.add(btnStartTournament);
+
 	}
 
 }

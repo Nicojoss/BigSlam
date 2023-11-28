@@ -6,18 +6,15 @@ import java.util.*;
 public class Tournament implements Serializable{
 	//Attributes
 	private static final long serialVersionUID = 7623019250849900526L;
-	private int id;
 	private String name;
 	private List<Court> courts = new ArrayList<Court>();
-	private List<Referee> referees;
+	private List<Referee> referees = new ArrayList<Referee>();
 	private List<Schedule> schedules;
 	
 	//CTOR
-	public Tournament(int id, String name, List<Schedule> schedules) {
+	public Tournament(String name) {
 		super();
-		this.id = id;
 		this.name = name;
-		this.schedules = schedules;
 		initSchedules();
 	}
 
@@ -27,24 +24,30 @@ public class Tournament implements Serializable{
 
 	//METHODES
 	private void initSchedules() {
-		//TODO: AJOUTER LES SCHEDULES SELON LE TYPE
-        schedules.add(new Schedule());
-        schedules.add(new Schedule());
-        schedules.add(new Schedule());
-        schedules.add(new Schedule());
-        schedules.add(new Schedule());
+		schedules = new ArrayList<Schedule>();
+		
+        schedules.add(new Schedule(ScheduleType.GentlemenSingle, 64, this));
+        schedules.add(new Schedule(ScheduleType.LadiesSingle, 64, this));
+        schedules.add(new Schedule(ScheduleType.GentlemenDouble, 32, this));
+        schedules.add(new Schedule(ScheduleType.LadiesDouble, 32, this));
+        schedules.add(new Schedule(ScheduleType.MixedDouble, 64, this));
     }
-	public boolean play() {
-		return false;
+	public void initReferees(){
+		referees = Referee.getAllReferee();
+	}
+	public void initCourts() {
+		courts = Court.getAllCourts();
+	}
+	public void play() {
+		for(Schedule s : schedules) {
+			for(Match m : s.getMatches()) {
+				m.play();
+			}
+			s.setActualRound((s.getActualRound()/2));
+		}
 	}
 	
 	//GETTERS SETTERS
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

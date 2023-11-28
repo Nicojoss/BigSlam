@@ -1,25 +1,29 @@
 package be.jossart.pojo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import be.jossart.connection.BigSlamConnection;
+import be.jossart.dao.DAO;
+import be.jossart.dao.PlayerDAO;
 
 public class Player extends Person implements Serializable{
 	//Attributs
 	private static final long serialVersionUID = 5072391255607440865L;
 	private int rank;
 	private String gender;
-	private List<Opponent> opponents;
+	private List<Opponent> opponents = new ArrayList<Opponent>();
 	
 	//CTOR
-	public Player() {
+	public Player(Opponent opponent) {
 		super();
+		opponents.add(opponent);
 	}
-	
-	public Player(int id, String firstname, String lastname, String nationality, int rank, String gender, List<Opponent> opponents) {
+	public Player(int id, String firstname, String lastname, String genderPlayer, String nationality, int rank) {
 		super(id, firstname, lastname, nationality);
+		this.gender = genderPlayer;
 		this.rank = rank;
-		this.gender = gender;
-		this.opponents = opponents;
 	}
 	//METHODES
 	public boolean create(Player obj) {
@@ -42,6 +46,24 @@ public class Player extends Person implements Serializable{
 		return null;
 	}
 	
+	public static Player getPlayerByGender(String typeSchedule) {
+		DAO<Player> playerDAO = new PlayerDAO(BigSlamConnection.getInstance());
+		
+		if(typeSchedule.equals("GentlemenSingle") || typeSchedule.equals("GentlemenDouble") || typeSchedule.equals("M")) {
+			return ((PlayerDAO) playerDAO).findByGender("M");
+		}else{
+			return ((PlayerDAO) playerDAO).findByGender("F");
+		}
+	}
+	
+	public static List<Player> findAll(){
+		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 	//GETTERS AND SETTERS
 	public int getRank() {
 		return rank;
@@ -61,7 +83,15 @@ public class Player extends Person implements Serializable{
 	public void setOpponents(List<Opponent> opponents) {
 		this.opponents = opponents;
 	}
-	
-	
+	public static List<Player> findPlayersByScheduleType(String scheduleType) {
+		DAO<Player> playerDAO = new PlayerDAO(BigSlamConnection.getInstance());
 
+	    if("GentlemenSingle".equals(scheduleType) || "GentlemenDouble".equals(scheduleType) || "M".equals(scheduleType)) {
+	        return ((PlayerDAO) playerDAO).findPlayersByGender("M");
+	    }else if ("LadiesSingle".equals(scheduleType) || "LadiesDouble".equals(scheduleType) || "F".equals(scheduleType)) {
+	        return ((PlayerDAO) playerDAO).findPlayersByGender("F");
+	    }else {
+	        return playerDAO.findAll();
+	    }
+	}
 }

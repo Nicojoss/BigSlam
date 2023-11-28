@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 
 public abstract class DAO<T> {
-protected Connection connect = null;
+	protected Connection connect = null;
 	
 	public DAO(Connection conn){
-		this.connect = conn;
+		connect = conn;
 	}
 	
 	public abstract boolean create(T obj);
