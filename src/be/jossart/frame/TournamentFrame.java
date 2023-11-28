@@ -70,8 +70,14 @@ public class TournamentFrame extends JFrame {
 				lblMatch.setBounds(10, yOffset, 100, 13);
 		        contentPane.add(lblMatch);
 		        i+=1;
-		        if(i == 64) {
-		            i=0;
+		        if(s.getType().name().equals("GentlemenSingle") 
+		        		|| s.getType().name().equals("LadiesSingle") 
+		        		|| s.getType().name().equals("MixedDouble") ){
+		        	if(i==64) {
+		        		i=0;
+		        	}
+		        }else if(i==32) {
+		        	i=0;
 		        }
 		        
 				for(Opponent o : m.getOpponents()) {
