@@ -7,7 +7,6 @@ import java.util.List;
 public class Schedule implements Serializable{
 	//Attributs
 	private static final long serialVersionUID = -612195055439435223L;
-	private int id;
 	private ScheduleType type;
 	private int actualRound;
 	private List<Match> matches = new ArrayList<>();
@@ -53,12 +52,6 @@ public class Schedule implements Serializable{
 		return null;
 	}
 	//GETTERS SETTERS
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public ScheduleType getType() {
 		return type;
 	}

@@ -35,6 +35,7 @@ public class Match implements Serializable{
 	public void play() {
 		
 	}
+
 	private static int generateDuration(int min, int max) {
         Random random = new Random();
         return random.nextInt(max - min + 1) + min;
@@ -45,7 +46,7 @@ public class Match implements Serializable{
 			opponents.add(opponent);
 		}
 	}
-
+	
 	//GETTERS SETTERS
 	public LocalDate getDate() {
 		return date;
@@ -80,22 +81,18 @@ public class Match implements Serializable{
 	public List<Opponent> getOpponents() {
 		return opponents;
 	}
-
 	public void setOpponents(List<Opponent> opponents) {
 		this.opponents = opponents;
 	}
-
 	public Court getCourt() {
 		return court;
 	}
 	public void setCourt(Court court) {
 		this.court = court;
 	}
-
 	public Schedule getSchedule() {
 		return schedule;
 	}
-
 	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
 	}

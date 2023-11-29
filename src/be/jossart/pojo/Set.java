@@ -5,18 +5,21 @@ import java.io.Serializable;
 public class Set implements Serializable{
 	//ATTRIBUTS
 	private static final long serialVersionUID = -2406995578434433692L;
-	private int scoreOp1;
-	private int scoreOp2;
-	private Opponent opponentWinner;
+	protected int scoreOp1 = 0;
+	protected int scoreOp2 = 0;
+	private Opponent opponentWinner = null;
+	private Match match;
 	
 	//CTOR
-	public Set() {
+	public Set(Match match) {
 		super();
+		this.match = match;
 	}
 	//METHODES
-	public boolean play() {
-		return false;
+	public void play() {
+		
 	}
+	
 	//GETTERS SETTERS
 	public int getScoreOp1() {
 		return scoreOp1;
@@ -30,10 +33,17 @@ public class Set implements Serializable{
 	public void setScoreOp2(int scoreOp2) {
 		this.scoreOp2 = scoreOp2;
 	}
-	public Opponent getOpponent() {
+	public Opponent getOpponentWinner() {
 		return opponentWinner;
 	}
-	public void setOpponent(Opponent opponent) {
-		this.opponentWinner = opponent;
+	public void setOpponentWinner(Opponent opponentWinner) {
+		this.opponentWinner = opponentWinner;
 	}
+	public Match getMatch() {
+		return match;
+	}
+	public void setMatch(Match match) {
+		this.match = match;
+	}
+
 }

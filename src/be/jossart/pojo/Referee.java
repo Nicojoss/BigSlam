@@ -20,6 +20,9 @@ public class Referee extends Person implements Serializable{
 		super();
 	}
 	//METHODES
+	public void available() {
+	}
+	public void release() {}
 	public static List<Referee> getAllReferee() {
 		RefereeDAO refereeDAO = new RefereeDAO(BigSlamConnection.getInstance());
 		
