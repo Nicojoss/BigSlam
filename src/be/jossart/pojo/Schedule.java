@@ -12,6 +12,7 @@ public class Schedule implements Serializable{
 	private List<Match> matches = new ArrayList<>();
 	private List<Player> players = new ArrayList<>();
 	private Tournament tournament;
+	private List<Player> winnerPlayers = new ArrayList<>();
 	
 	//CTOR
 	public Schedule(ScheduleType type, int actualRound, Tournament tournament) {
@@ -19,12 +20,12 @@ public class Schedule implements Serializable{
 		this.type = type;
 		this.actualRound = actualRound;
 		this.tournament = tournament;
-		players = initListPlayers();
 		matches = initMatches();
 	}
 	
 	//METHODES
 	private List<Match> initMatches() {
+		players = initListPlayers();
 		if(type.name().equals("GentlementDouble") || type.name().equals("LadiesDouble")) {
 			for(int i = 0; i<actualRound; i++) {
 				Match match = new Match(actualRound, this);
@@ -43,13 +44,29 @@ public class Schedule implements Serializable{
 	}
 
 	public int nbWinningSets() {
-		return 0;
+		return this.getType().equals(ScheduleType.GentlemenSingle) ? 5 : 3;
 	}
-	public boolean playNextRound() {
-		return false;
+	public void playNextRound() {
+		for(Match m : this.getMatches()) {
+			if(m.getRound() == this.actualRound) {
+				m.play();
+			}
+		}
+		if (this.getActualRound() == 1) {
+	        List<Player> winners = new ArrayList<>();
+	        for (Match m : this.getMatches()) {
+	            winners.addAll(m.getWinnerPlayer());
+	        }
+	        setWinnerPlayers(winners);
+	    }
 	}
-	public Player getWinner() {
-		return null;
+	public void prepareNextRound() {
+		this.matches.clear();
+		this.setActualRound((this.getActualRound()/2));
+		initMatches();
+	}
+	public List<Player> getWinner() {
+		return getWinnerPlayers();
 	}
 	//GETTERS SETTERS
 	public ScheduleType getType() {
@@ -82,6 +99,12 @@ public class Schedule implements Serializable{
 	public void setPlayers(List<Player> players) {
 		this.players = players;
 	}
-	
-	
+
+	public List<Player> getWinnerPlayers() {
+		return winnerPlayers;
+	}
+
+	public void setWinnerPlayers(List<Player> winnerPlayers) {
+		this.winnerPlayers = winnerPlayers;
+	}
 }

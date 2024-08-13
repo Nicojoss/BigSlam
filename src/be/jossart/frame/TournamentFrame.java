@@ -16,6 +16,8 @@ import be.jossart.pojo.Tournament;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 public class TournamentFrame extends JFrame {
@@ -36,63 +38,150 @@ public class TournamentFrame extends JFrame {
         setContentPane(scrollPane);
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 		
-		JLabel lblGentlemenSingleResult = new JLabel("Result of the round " + tournament.getSchedules().get(0).getActualRound());
+		JLabel lblGentlemenSingleResult = new JLabel("Result of the round ");
 		lblGentlemenSingleResult.setBounds(5, 5, 157, 13);
 		lblGentlemenSingleResult.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblGentlemenSingleResult);
 		
-		JButton btnNewButton = new JButton("Return");
-		btnNewButton.setBounds(5, 18, 96, 21);
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnReturn = new JButton("Return");
+		btnReturn.setBounds(5, 18, 96, 21);
+		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Home homeFrame = new Home();
 				homeFrame.setVisible(true);
-
 				dispose();
 			}
 		});
-		contentPane.add(btnNewButton);
+		contentPane.add(btnReturn);
 		
-		JButton btnNewButton_1 = new JButton("Start Round");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//TODO: Lancer les matches en respectant le Round
-			}
-		});
-		btnNewButton_1.setBounds(5, 39, 121, 21);
-		contentPane.add(btnNewButton_1);
-		
-		
-		
-		for(Schedule s : tournament.getSchedules()) {
-			for(Match m : s.getMatches()) {
-				JLabel lblMatch = new JLabel("Match : " + (i+1));
-				lblMatch.setBounds(10, yOffset, 100, 13);
-		        contentPane.add(lblMatch);
-		        i+=1;
-		        if(s.getType().name().equals("GentlemenSingle") 
-		        		|| s.getType().name().equals("LadiesSingle") 
-		        		|| s.getType().name().equals("MixedDouble") ){
-		        	if(i==64) {
-		        		i=0;
-		        	}
-		        }else if(i==32) {
-		        	i=0;
+		JButton btnStartRound = new JButton("Start Round");
+		btnStartRound.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        for (Schedule s : tournament.getSchedules()) {
+		            s.playNextRound();
 		        }
-		        
-				for(Opponent o : m.getOpponents()) {
-	            	for(Player p : o.getPlayers()) {
-	            		JLabel lblNewLabel = new JLabel(p.getFirstname() + " " + p.getLastname());
-		        		
-						lblNewLabel.setBounds(xOffset, yOffset, 200, 13);
-		        		contentPane.add(lblNewLabel);
-		        		xOffset+=50;
-	            	}
-	            	xOffset-=50;
-	            	yOffset += 15;
-	            }
-	            yOffset += 30;
-			}
-		}
+
+		        DisplayResults();
+		    }
+
+		    private void DisplayResults() {
+		        contentPane.removeAll();
+
+		        JButton btnNextRound = new JButton("Next Round");
+		        btnNextRound.setBounds(5, 5, 121, 21);
+		        btnNextRound.addActionListener(new ActionListener() {
+		            public void actionPerformed(ActionEvent e) {
+		            	if(tournament.getSchedules().get(0).getActualRound() > 1){
+		            		for (Schedule s : tournament.getSchedules()) {
+			                    s.prepareNextRound();
+			                    s.playNextRound();
+			                    DisplayResults();
+			                }
+		            	}else {
+		            		for(Schedule s : tournament.getSchedules()) {
+		            			s.getWinner();
+		            		}
+		            	}
+		            }
+		        });
+		        contentPane.add(btnNextRound);
+
+		        JLabel lblRoundResults = new JLabel("Results of the round ");
+		        lblRoundResults.setBounds(5, 30, 300, 15);
+		        lblRoundResults.setHorizontalAlignment(SwingConstants.CENTER);
+		        lblRoundResults.setForeground(Color.BLUE);
+		        contentPane.add(lblRoundResults);
+
+		        int yOffset = 60; 
+		        int xOffset = 10; 
+
+		        for (Schedule s : tournament.getSchedules()) {
+		        	if(s.getActualRound() >= 1) {
+		        		JLabel lblScheduleType = new JLabel("Schedule Type: " + s.getType().name() + " - Round: " + s.getActualRound());
+			            lblScheduleType.setBounds(10, yOffset, 300, 15);
+			            lblScheduleType.setForeground(Color.RED);
+			            contentPane.add(lblScheduleType);
+		        	}
+		            yOffset += 20;
+
+		            for (Match m : s.getMatches()) {
+		                JLabel lblMatch = new JLabel("Match: " + (s.getMatches().indexOf(m) + 1));
+		                lblMatch.setBounds(10, yOffset, 100, 15);
+		                contentPane.add(lblMatch);
+
+		                xOffset = 120;
+		                for (Opponent o : m.getOpponents()) {
+		                    for (Player p : o.getPlayers()) {
+		                        JLabel lblPlayer = new JLabel(p.getFirstname() + " " + p.getLastname());
+		                        lblPlayer.setBounds(xOffset, yOffset, 200, 15);
+		                        contentPane.add(lblPlayer);
+		                        xOffset += 100;
+		                    }
+		                    yOffset += 15;
+		                }
+
+		                List<Player> winners = m.getWinnerPlayer();
+
+		                String winnerNames = winners.stream()
+		                        .map(p -> p.getFirstname() + " " + p.getLastname())
+		                        .reduce((p1, p2) -> p1 + ", " + p2)
+		                        .orElse("No Winner");
+
+		                JLabel lblMatchResult = new JLabel("Winners: " + winnerNames +
+		                        " | Score: " + m.getSetsWonByPlayer1() + "-" + m.getSetsWonByPlayer2());
+		                lblMatchResult.setBounds(10, yOffset, 800, 15);
+		                contentPane.add(lblMatchResult);
+
+		                yOffset += 30;
+		            }
+		            if (s.getActualRound() == 1) {
+		                List<Player> winners = s.getWinner();
+		                String winnerNames = winners.stream()
+		                        .map(p -> p.getFirstname() + " " + p.getLastname())
+		                        .reduce((p1, p2) -> p1 + ", " + p2)
+		                        .orElse("No Winner");
+
+		                JLabel lblTournamentWinner = new JLabel("Tournament Winner(s): " + winnerNames);
+		                lblTournamentWinner.setBounds(10, yOffset, 800, 15);
+		                lblTournamentWinner.setForeground(Color.GREEN);
+		                contentPane.add(lblTournamentWinner);
+
+		                yOffset += 30;
+		            }
+		            if (s.getActualRound() < 1) {
+		            	JLabel lblScheduleFinalType = new JLabel("Final Schedule Type: " + s.getType().name());
+		                lblScheduleFinalType.setBounds(10, yOffset, 300, 15);
+		                lblScheduleFinalType.setForeground(Color.RED);
+		                contentPane.add(lblScheduleFinalType);
+
+		                yOffset += 20;
+		                
+		                List<Player> winners = s.getWinner();
+		                String winnerNames = winners.stream()
+		                        .map(p -> p.getFirstname() + " " + p.getLastname())
+		                        .reduce((p1, p2) -> p1 + ", " + p2)
+		                        .orElse("No Winner");
+
+		                JLabel lblTournamentWinner = new JLabel("Tournament Winner(s): " + winnerNames);
+		                lblTournamentWinner.setBounds(10, yOffset, 800, 15);
+		                lblTournamentWinner.setForeground(Color.GREEN);
+		                contentPane.add(lblTournamentWinner);
+
+		                yOffset += 30;
+		            }
+		            yOffset += 40;
+		        }
+
+		        contentPane.revalidate();
+		        contentPane.repaint();
+		    }
+		});
+
+		btnStartRound.setBounds(5, 39, 121, 21);
+		contentPane.add(btnStartRound);
+		
+		
+		
+		
 	}
 }

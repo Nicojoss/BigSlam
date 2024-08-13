@@ -23,7 +23,7 @@ public class Tournament implements Serializable{
 	}
 
 	//METHODES
-	private void initSchedules() {
+	public void initSchedules() {
 		schedules = new ArrayList<Schedule>();
 		
         schedules.add(new Schedule(ScheduleType.GentlemenSingle, 64, this));
@@ -40,9 +40,7 @@ public class Tournament implements Serializable{
 	}
 	public void play() {
 		for(Schedule s : schedules) {
-			for(Match m : s.getMatches()) {
-				m.play();
-			}
+			s.playNextRound();
 			s.setActualRound((s.getActualRound()/2));
 		}
 	}

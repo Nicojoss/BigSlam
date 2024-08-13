@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import be.jossart.connection.BigSlamConnection;
+import be.jossart.dao.DAO;
+import be.jossart.dao.MatchDAO;
+
 public class Match implements Serializable{
 	//ATTRIBUTS
 	private static final long serialVersionUID = 4804782659203218408L;
@@ -17,7 +21,11 @@ public class Match implements Serializable{
 	private List<Set> sets;
 	private List<Opponent> opponents = new ArrayList<>();
 	private Schedule schedule;
-	
+	private List<Player> winnerPlayer = new ArrayList<>();
+	private List<Player> loserPlayer = new ArrayList<>();
+	private int setsWonByPlayer1 = 0;
+    private int setsWonByPlayer2 = 0;
+
 	//CTOR
 	public Match(int round, Schedule schedule) {
 		super();
@@ -25,18 +33,83 @@ public class Match implements Serializable{
 		this.duration = generateDuration(90, 120);
 		this.round = round;
 		this.schedule = schedule;
+		this.sets = new ArrayList<>();
+		court = initCourt();
+		referee = initReferee();
 		initOpponents();
 	}
 	
 	//Methodes
-	public Player getWinner() {
-		return null;
+	public List<Player> getWinner(int setsWonByPlayer1, int setsWonByPlayer2) {
+		if(setsWonByPlayer1 > setsWonByPlayer2) {
+			if(isDoublesMatch()) {
+				winnerPlayer.add(opponents.get(0).getPlayers().get(0));
+				winnerPlayer.add(opponents.get(0).getPlayers().get(1));
+				this.schedule.getPlayers().add(opponents.get(0).getPlayers().get(0));
+				this.schedule.getPlayers().add(opponents.get(0).getPlayers().get(1));
+				loserPlayer.add(opponents.get(1).getPlayers().get(0));
+				loserPlayer.add(opponents.get(1).getPlayers().get(1));
+			}else {
+				winnerPlayer.add(opponents.get(0).getPlayers().get(0));
+				this.schedule.getPlayers().add(opponents.get(0).getPlayers().get(0));
+				loserPlayer.add(opponents.get(1).getPlayers().get(0));
+			}
+			
+			return winnerPlayer;
+		}else {
+			if(isDoublesMatch()) {
+				winnerPlayer.add(opponents.get(1).getPlayers().get(0));
+				winnerPlayer.add(opponents.get(1).getPlayers().get(1));
+				this.schedule.getPlayers().add(opponents.get(1).getPlayers().get(0));
+				this.schedule.getPlayers().add(opponents.get(1).getPlayers().get(1));
+				loserPlayer.add(opponents.get(0).getPlayers().get(0));
+				loserPlayer.add(opponents.get(0).getPlayers().get(1));
+			}else {
+				winnerPlayer.add(opponents.get(1).getPlayers().get(0));
+				this.schedule.getPlayers().add(opponents.get(1).getPlayers().get(0));
+				loserPlayer.add(opponents.get(0).getPlayers().get(0));
+			}
+			return winnerPlayer;
+		}
 	}
 	public void play() {
-		
+	    int nbrSetsToWin = this.schedule.nbWinningSets();
+	    
+	    while (setsWonByPlayer1 < nbrSetsToWin && setsWonByPlayer2 < nbrSetsToWin) {
+	        Set set = createSet(setsWonByPlayer1, setsWonByPlayer2, nbrSetsToWin);
+	        set.play();
+	        sets.add(set);
+
+	        if (set.getOpponentWinner() == opponents.get(0)) {
+	            setsWonByPlayer1++;
+	        } else {
+	            setsWonByPlayer2++;
+	        }
+	    }
+	    getWinner(setsWonByPlayer1, setsWonByPlayer2);
+	    saveMatchResult(setsWonByPlayer1, setsWonByPlayer2);
+	}
+	public Set createSet(int setsWonByPlayer1, int setsWonByPlayer2, int nbrSetsToWin) {
+	    boolean isDoubles = isDoublesMatch();
+	    boolean isFinalSet = sets.size() == (nbrSetsToWin - 1);
+
+	    if (isFinalSet && isDoubles) {
+	        return new SuperTieBreak(this);
+	    }
+	    return new Set(this);
+	}
+	public boolean isDoublesMatch() {
+	    ScheduleType type = schedule.getType();
+	    return type == ScheduleType.GentlemenDouble || 
+	           type == ScheduleType.LadiesDouble || 
+	           type == ScheduleType.MixedDouble;
 	}
 
-	private static int generateDuration(int min, int max) {
+	public void saveMatchResult(int setsWonByPlayer1, int setsWonByPlayer2) {
+		DAO<Match> matchDAO = new MatchDAO(BigSlamConnection.getInstance());
+		matchDAO.create(this);
+	}
+	public static int generateDuration(int min, int max) {
         Random random = new Random();
         return random.nextInt(max - min + 1) + min;
     }
@@ -45,6 +118,20 @@ public class Match implements Serializable{
 			Opponent opponent = new Opponent(this);
 			opponents.add(opponent);
 		}
+	}
+	private Court initCourt() {
+		List<Court> courts = Court.getAllCourts();
+		Random random = new Random();
+	    int randomIndex = random.nextInt(courts.size());
+	    
+	    return courts.get(randomIndex);
+	}
+	private Referee initReferee() {
+		List<Referee> referees = Referee.getAllReferee();
+		Random random = new Random();
+	    int randomIndex = random.nextInt(referees.size());
+	    
+	    return referees.get(randomIndex);
 	}
 	
 	//GETTERS SETTERS
@@ -95,5 +182,36 @@ public class Match implements Serializable{
 	}
 	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
+	}
+
+	public List<Player> getWinnerPlayer() {
+		return winnerPlayer;
+	}
+
+	public void setWinnerPlayer(List<Player> winnerPlayer) {
+		this.winnerPlayer = winnerPlayer;
+	}
+
+	public List<Player> getLoserPlayer() {
+		return loserPlayer;
+	}
+
+	public void setLoserPlayer(List<Player> loserPlayer) {
+		this.loserPlayer = loserPlayer;
+	}
+	public int getSetsWonByPlayer1() {
+		return setsWonByPlayer1;
+	}
+
+	public void setSetsWonByPlayer1(int setsWonByPlayer1) {
+		this.setsWonByPlayer1 = setsWonByPlayer1;
+	}
+
+	public int getSetsWonByPlayer2() {
+		return setsWonByPlayer2;
+	}
+
+	public void setSetsWonByPlayer2(int setsWonByPlayer2) {
+		this.setsWonByPlayer2 = setsWonByPlayer2;
 	}
 }

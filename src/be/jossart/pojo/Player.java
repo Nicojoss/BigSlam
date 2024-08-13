@@ -60,6 +60,18 @@ public class Player extends Person implements Serializable{
 		return null;
 	}
 	
+	public static List<Player> findPlayersByScheduleType(String scheduleType) {
+		DAO<Player> playerDAO = new PlayerDAO(BigSlamConnection.getInstance());
+
+	    if("GentlemenSingle".equals(scheduleType) || "GentlemenDouble".equals(scheduleType) || "M".equals(scheduleType)) {
+	        return ((PlayerDAO) playerDAO).findPlayersByGender("M");
+	    }else if ("LadiesSingle".equals(scheduleType) || "LadiesDouble".equals(scheduleType) || "F".equals(scheduleType)) {
+	        return ((PlayerDAO) playerDAO).findPlayersByGender("F");
+	    }else {
+	        return playerDAO.findAll();
+	    }
+	}
+	
 	@Override
 	public String toString() {
 		return super.toString();
@@ -82,16 +94,5 @@ public class Player extends Person implements Serializable{
 	}
 	public void setOpponents(List<Opponent> opponents) {
 		this.opponents = opponents;
-	}
-	public static List<Player> findPlayersByScheduleType(String scheduleType) {
-		DAO<Player> playerDAO = new PlayerDAO(BigSlamConnection.getInstance());
-
-	    if("GentlemenSingle".equals(scheduleType) || "GentlemenDouble".equals(scheduleType) || "M".equals(scheduleType)) {
-	        return ((PlayerDAO) playerDAO).findPlayersByGender("M");
-	    }else if ("LadiesSingle".equals(scheduleType) || "LadiesDouble".equals(scheduleType) || "F".equals(scheduleType)) {
-	        return ((PlayerDAO) playerDAO).findPlayersByGender("F");
-	    }else {
-	        return playerDAO.findAll();
-	    }
 	}
 }

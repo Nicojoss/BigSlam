@@ -19,9 +19,6 @@ public class Home extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -35,9 +32,6 @@ public class Home extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public Home() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -58,7 +52,6 @@ public class Home extends JFrame {
 				Tournament tournament = new Tournament("Big Slam");
 				TournamentFrame tournamentFrame = new TournamentFrame(tournament);
 				tournamentFrame.setVisible(true);
-
 				dispose();
 			}
 		});
