@@ -32,11 +32,11 @@ public class Tournament implements Serializable{
         schedules.add(new Schedule(ScheduleType.LadiesDouble, 32, this));
         schedules.add(new Schedule(ScheduleType.MixedDouble, 64, this));
     }
-	public void initReferees(){
-		referees = Referee.getAllReferee();
+	public List<Referee> initReferees(){
+		return referees = Referee.getAllReferee();
 	}
-	public void initCourts() {
-		courts = Court.getAllCourts();
+	public List<Court> initCourts() {
+		return courts = Court.getAllCourts();
 	}
 	public void play() {
 		for(Schedule s : schedules) {

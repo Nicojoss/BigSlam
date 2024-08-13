@@ -120,14 +120,14 @@ public class Match implements Serializable{
 		}
 	}
 	private Court initCourt() {
-		List<Court> courts = Court.getAllCourts();
+		List<Court> courts = this.schedule.getTournament().initCourts();;
 		Random random = new Random();
 	    int randomIndex = random.nextInt(courts.size());
 	    
 	    return courts.get(randomIndex);
 	}
 	private Referee initReferee() {
-		List<Referee> referees = Referee.getAllReferee();
+		List<Referee> referees = this.schedule.getTournament().initReferees();;
 		Random random = new Random();
 	    int randomIndex = random.nextInt(referees.size());
 	    
